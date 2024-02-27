@@ -16,6 +16,18 @@ public class UserService {
     }
 
     public User registerUser(User user) {
-        return userRepository.save(user);
+        if (user.getEmail() != null && user.getPassword() != null && isValidEmail(user.getEmail()) && isValidPassword(user.getPassword())) {
+            return userRepository.save(user);
+        }
+        return null;
     }
+
+    private boolean isValidEmail(String email) {
+        return email.matches("^[a-zA-Z0-9+_.-]+@[a-zA-Z0-9.-]+$");
+    }
+
+    private boolean isValidPassword(String password) {
+        return password.matches("^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[@#$%^&+=])(?=\\S+$).{8,}$");
+    }
+
 }
