@@ -1,0 +1,29 @@
+
+server:
+  port: 8080
+  servlet:
+    context-path: /
+
+spring:
+  application:
+    name: bankApp
+
+
+  jpa:
+    database-platform: org.hibernate.dialect.MySQL8Dialect
+    show-sql: true
+    generate-ddl: true
+    properties:
+      hibernate:
+        jdbc:
+          time_zone: UTC
+
+  datasource:
+    url: ${URL}
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    username: ${USERNAME}
+    password: ${PASSWORD}
+
+  aop:
+    auto: true
+    proxy-target-class: true
