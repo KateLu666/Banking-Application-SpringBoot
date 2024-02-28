@@ -67,4 +67,14 @@ public class UserService {
     }
 
 
+//     private boolean isValidEmail(String email) {
+//         return email.matches("^[a-zA-Z0-9+_.-]+@[a-zA-Z0-9.-]+$");
+//     }
+
+//     private boolean isValidPassword(String password) {
+//         return password.matches("^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[@#$%^&+=])(?=\\S+$).{8,}$");
+//     }
+// =======
+
+
 }
