@@ -4,6 +4,7 @@ import com.bankApp.bankApp.CustomException.InvalidEmailException;
 import com.bankApp.bankApp.CustomException.InvalidPasswordException;
 import com.bankApp.bankApp.Model.User;
 import com.bankApp.bankApp.Repository.UserRepository;
+import com.bankApp.bankApp.Utili.DTO.LoginCreds;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -35,6 +36,19 @@ public class UserService {
         }
 
         return userRepository.save(user);
+    }
+
+    public User loginUser(LoginCreds loginCreds) {
+        User user = userRepository.findByEmail(loginCreds.getEmail());
+        if (user == null) {
+            throw new InvalidEmailException("Email does not exist");
+        }
+
+        if (!user.getPassword().equals(loginCreds.getPassword())) {
+            throw new InvalidPasswordException("Invalid password");
+        }
+
+        return user;
     }
 
     private boolean isValidEmail(String email) {

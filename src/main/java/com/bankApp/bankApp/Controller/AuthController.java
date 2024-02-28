@@ -4,11 +4,14 @@ import com.bankApp.bankApp.CustomException.InvalidEmailException;
 import com.bankApp.bankApp.CustomException.InvalidPasswordException;
 import com.bankApp.bankApp.Model.User;
 import com.bankApp.bankApp.Service.UserService;
+import com.bankApp.bankApp.Utili.DTO.LoginCreds;
+import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.http.HttpStatus;
+
 
 @RestController
 @RequestMapping("/auth")
@@ -22,14 +25,25 @@ public class AuthController {
     }
 
     @PostMapping("/register")
-    public ResponseEntity<User> registerUser(@RequestBody User user) {
+    public ResponseEntity<User> registerUser(@RequestBody User user, HttpSession session) {
        User registeredUser = userService.registerUser(user);
        return ResponseEntity.ok(registeredUser);
     }
 
+    @PostMapping("/login")
+    public ResponseEntity<User> loginUser(@RequestBody LoginCreds loginCreds, HttpSession session) {
+        User loggedInUser = userService.loginUser(loginCreds);
+        return ResponseEntity.ok(loggedInUser);
+    }
+
+    @PostMapping("/logout")
+    public ResponseEntity<?> logoutUser(HttpSession session) {
+        session.invalidate();
+        return ResponseEntity.ok("User logged out successfully");
+    }
+
     @ExceptionHandler(InvalidEmailException.class)
     public ResponseEntity<?> handleInvalidEmailException(InvalidEmailException ex, WebRequest request) {
-        // You can add more details in the response if necessary
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ex.getMessage());
     }
 
