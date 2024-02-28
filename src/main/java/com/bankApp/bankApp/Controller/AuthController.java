@@ -25,21 +25,36 @@ public class AuthController {
     }
 
     @PostMapping("/register")
-    public ResponseEntity<User> registerUser(@RequestBody User user, HttpSession session) {
-       User registeredUser = userService.registerUser(user);
-       return ResponseEntity.ok(registeredUser);
+    public ResponseEntity<?> registerUser(@RequestBody User user, HttpSession session) {
+        if(session.getAttribute("user") != null) {
+            return ResponseEntity.badRequest().body("Logout required before registering a new account.");
+        }
+        User registeredUser = userService.registerUser(user);
+        return ResponseEntity.ok(registeredUser);
     }
 
     @PostMapping("/login")
-    public ResponseEntity<User> loginUser(@RequestBody LoginCreds loginCreds, HttpSession session) {
+    public ResponseEntity<?> loginUser(@RequestBody LoginCreds loginCreds, HttpSession session) {
+        if (session.getAttribute("user") != null) {
+            return ResponseEntity.badRequest().body("Already logged in. Please logout before logging in again.");
+        }
+
         User loggedInUser = userService.loginUser(loginCreds);
-        return ResponseEntity.ok(loggedInUser);
+        if (loggedInUser != null) {
+            session.setAttribute("user", loggedInUser);
+            return ResponseEntity.ok(loggedInUser);
+        } else {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid credentials.");
+        }
     }
 
     @PostMapping("/logout")
     public ResponseEntity<?> logoutUser(HttpSession session) {
-        session.invalidate();
-        return ResponseEntity.ok("User logged out successfully");
+        if (session.getAttribute("user") != null) {
+            session.invalidate();
+            return ResponseEntity.ok("User logged out successfully");
+        }
+        return ResponseEntity.badRequest().body("No user logged in");
     }
 
     @ExceptionHandler(InvalidEmailException.class)
