@@ -28,6 +28,14 @@ public class UserService {
 
     @Transactional
     public User registerUser(User user) {
+        if (containsWhitespace(user.getEmail())) {
+            throw new InvalidEmailException("Email cannot contain whitespace");
+        }
+
+        if (containsWhitespace(user.getPassword())) {
+            throw new InvalidPasswordException("Password cannot contain whitespace");
+        }
+
         if (!isValidEmail(user.getEmail())) {
             throw new InvalidEmailException("Invalid email format");
         }
@@ -79,5 +87,7 @@ public class UserService {
         return password != null && pattern.matcher(password).matches();
     }
 
-
+    private boolean containsWhitespace(String input) {
+        return input.contains(" ");
+    }
 }

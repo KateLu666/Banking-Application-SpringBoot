@@ -1,5 +1,6 @@
 package com.bankApp.bankApp.Controller;
 
+import com.bankApp.bankApp.CustomException.InvalidTransactionAmountException;
 import com.bankApp.bankApp.Model.User;
 import com.bankApp.bankApp.Model.Account;
 import com.bankApp.bankApp.Service.AccountService;
@@ -41,6 +42,22 @@ public class AccountController {
 
         Account account = accountService.deposit(user.getUserId(), transactionRequest.getAmount());
         return ResponseEntity.ok("Amount deposited successfully. New balance: " + account.getBalance());
+    }
+
+    @PostMapping("/withdraw")
+    public ResponseEntity<?> withdraw(@RequestBody TransactionRequest transactionRequest, HttpSession session) {
+        User user = (User) session.getAttribute("user");
+        if (user == null) {
+            return ResponseEntity.badRequest().body("No user logged in. Please login to withdraw.");
+        }
+
+        Account account = accountService.withdraw(user.getUserId(), transactionRequest.getAmount());
+        return ResponseEntity.ok("Amount withdrawn successfully. New balance: " + account.getBalance());
+    }
+
+    @ExceptionHandler(InvalidTransactionAmountException.class)
+    public ResponseEntity<?> handleInvalidTransactionAmountException(InvalidTransactionAmountException ex) {
+        return ResponseEntity.badRequest().body(ex.getMessage());
     }
 
 }
