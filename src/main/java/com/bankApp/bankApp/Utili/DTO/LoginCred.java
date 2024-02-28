@@ -1,12 +1,11 @@
 package com.bankApp.bankApp.Utili.DTO;
-import lombok.Data;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Getter;
 import lombok.Setter;
 
 @Setter
 @Getter
-public class LoginCreds {
+public class LoginCred {
     // Getters and Setters
     @JsonProperty("email") // Map JSON field name to Java field name
     private String email;
@@ -15,12 +14,12 @@ public class LoginCreds {
     private String password;
 
     // Constructors
-    public LoginCreds(String email, String password) {
+    public LoginCred(String email, String password) {
         this.email = email;
         this.password = password;
     }
 
-    public LoginCreds() {
+    public LoginCred() {
     }
 
 }
