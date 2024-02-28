@@ -8,15 +8,11 @@ import lombok.Setter;
 @Setter
 @Getter
 public class TransactionRequest {
-    @JsonProperty("accountId")
-    private int accountId;
-
     @JsonProperty("amount")
     private double amount;
 
     // Constructors
-    public TransactionRequest(int accountId, double amount) {
-        this.accountId = accountId;
+    public TransactionRequest(double amount) {
         this.amount = amount;
     }
 
