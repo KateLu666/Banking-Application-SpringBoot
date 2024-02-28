@@ -5,6 +5,7 @@ import com.bankApp.bankApp.Model.User;
 import com.bankApp.bankApp.Model.Account;
 import com.bankApp.bankApp.Service.AccountService;
 import com.bankApp.bankApp.Utili.DTO.TransactionRequest;
+import com.bankApp.bankApp.Utili.DTO.TransferRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -53,6 +54,25 @@ public class AccountController {
 
         Account account = accountService.withdraw(user.getUserId(), transactionRequest.getAmount());
         return ResponseEntity.ok("Amount withdrawn successfully. New balance: " + account.getBalance());
+    }
+
+    @PostMapping("/transfer")
+    public ResponseEntity<?> transfer(@RequestBody TransferRequest transferRequest, HttpSession session) {
+        User user = (User) session.getAttribute("user");
+        if (user == null) {
+            return ResponseEntity.badRequest().body("No user logged in. Please login to transfer.");
+        }
+
+        if (user.getUserId() == transferRequest.getToUserId()) {
+            return ResponseEntity.badRequest().body("Cannot transfer to same account.");
+        }
+
+        if (user.getUserId() != transferRequest.getFromUserId()) {
+            return ResponseEntity.badRequest().body("Logged in user ID does not match with fromUserId.");
+        }
+
+        accountService.transfer(transferRequest.getFromUserId(), transferRequest.getToUserId(), transferRequest.getAmount());
+        return ResponseEntity.ok("Amount transferred successfully. New balance: " + accountService.checkBalance(user.getUserId()));
     }
 
     @ExceptionHandler(InvalidTransactionAmountException.class)

@@ -7,19 +7,19 @@ import lombok.Setter;
 @Setter
 @Getter
 public class TransferRequest {
-    @JsonProperty("fromAccountId")
-    private int fromAccountId;
+    @JsonProperty("fromUserId")
+    private int fromUserId;
 
-    @JsonProperty("toAccountId")
-    private int toAccountId;
+    @JsonProperty("toUserId")
+    private int toUserId;
 
     @JsonProperty("amount")
     private double amount;
 
     // Constructors
-    public TransferRequest(int fromAccountId, int toAccountId, double amount) {
-        this.fromAccountId = fromAccountId;
-        this.toAccountId = toAccountId;
+    public TransferRequest(int fromUserId, int toUserId, double amount) {
+        this.fromUserId = fromUserId;
+        this.toUserId = toUserId;
         this.amount = amount;
     }
 
