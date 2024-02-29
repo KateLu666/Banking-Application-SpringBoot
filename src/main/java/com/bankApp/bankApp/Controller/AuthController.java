@@ -4,7 +4,7 @@ import com.bankApp.bankApp.CustomException.InvalidEmailException;
 import com.bankApp.bankApp.CustomException.InvalidPasswordException;
 import com.bankApp.bankApp.Model.User;
 import com.bankApp.bankApp.Service.UserService;
-import com.bankApp.bankApp.Utili.DTO.LoginCreds;
+import com.bankApp.bankApp.Utili.DTO.LoginCred;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -34,12 +34,12 @@ public class AuthController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<?> loginUser(@RequestBody LoginCreds loginCreds, HttpSession session) {
+    public ResponseEntity<?> loginUser(@RequestBody LoginCred loginCred, HttpSession session) {
         if (session.getAttribute("user") != null) {
             return ResponseEntity.badRequest().body("Already logged in. Please logout before logging in again.");
         }
 
-        User loggedInUser = userService.loginUser(loginCreds);
+        User loggedInUser = userService.loginUser(loginCred);
         if (loggedInUser != null) {
             session.setAttribute("user", loggedInUser);
             return ResponseEntity.ok(loggedInUser);
@@ -48,7 +48,7 @@ public class AuthController {
         }
     }
 
-    @PostMapping("/logout")
+    @DeleteMapping("/logout")
     public ResponseEntity<?> logoutUser(HttpSession session) {
         if (session.getAttribute("user") != null) {
             session.invalidate();

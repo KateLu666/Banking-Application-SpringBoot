@@ -2,9 +2,12 @@ package com.bankApp.bankApp.Service;
 
 import com.bankApp.bankApp.CustomException.InvalidEmailException;
 import com.bankApp.bankApp.CustomException.InvalidPasswordException;
+import com.bankApp.bankApp.Model.Account;
 import com.bankApp.bankApp.Model.User;
+import com.bankApp.bankApp.Repository.AccountRepository;
 import com.bankApp.bankApp.Repository.UserRepository;
-import com.bankApp.bankApp.Utili.DTO.LoginCreds;
+import com.bankApp.bankApp.Utili.DTO.LoginCred;
+import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -15,13 +18,24 @@ import java.util.Optional;
 public class UserService {
 
     private final UserRepository userRepository;
+    private final AccountRepository accountRepository;
 
     @Autowired
-    public UserService(UserRepository userRepository) {
+    public UserService(UserRepository userRepository, AccountRepository accountRepository) {
         this.userRepository = userRepository;
+        this.accountRepository = accountRepository;
     }
 
+    @Transactional
     public User registerUser(User user) {
+        if (containsWhitespace(user.getEmail())) {
+            throw new InvalidEmailException("Email cannot contain whitespace");
+        }
+
+        if (containsWhitespace(user.getPassword())) {
+            throw new InvalidPasswordException("Password cannot contain whitespace");
+        }
+
         if (!isValidEmail(user.getEmail())) {
             throw new InvalidEmailException("Invalid email format");
         }
@@ -35,10 +49,17 @@ public class UserService {
             throw new InvalidEmailException("Email already exists");
         }
 
-        return userRepository.save(user);
+        User savedUser = userRepository.save(user);
+
+        Account newAccount = new Account();
+        newAccount.setUser(savedUser);
+        newAccount.setBalance(0.0);
+        accountRepository.save(newAccount);
+
+        return savedUser;
     }
 
-    public User loginUser(LoginCreds loginCreds) {
+    public User loginUser(LoginCred loginCreds) {
         User user = userRepository.findByEmail(loginCreds.getEmail());
         if (user == null) {
             throw new InvalidEmailException("Email does not exist");
@@ -66,15 +87,7 @@ public class UserService {
         return password != null && pattern.matcher(password).matches();
     }
 
-
-//     private boolean isValidEmail(String email) {
-//         return email.matches("^[a-zA-Z0-9+_.-]+@[a-zA-Z0-9.-]+$");
-//     }
-
-//     private boolean isValidPassword(String password) {
-//         return password.matches("^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[@#$%^&+=])(?=\\S+$).{8,}$");
-//     }
-// =======
-
-
+    private boolean containsWhitespace(String input) {
+        return input.contains(" ");
+    }
 }
