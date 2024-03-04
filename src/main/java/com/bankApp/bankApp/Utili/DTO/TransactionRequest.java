@@ -18,4 +18,7 @@ public class TransactionRequest {
 
     public TransactionRequest() {
     }
+
+    public TransactionRequest(int i, double depositAmount) {
+    }
 }
